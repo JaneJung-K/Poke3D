@@ -54,27 +54,30 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - ARSCNViewDelegate
     
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
+    //실제 이미지가 감지되었을 때 3D 이미지를 스크린에 렌더한다.
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+        
         let node = SCNNode()
-     
+        
+        if let imageAnchor = anchor as? ARImageAnchor {
+            
+            //감지한 이미지를 보고 참조이미지 확인하고 실제 사이즈를 가져와라
+            let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
+            
+            //투명하게 만들어서 카드를 확인할 수 있게 한다
+            plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
+            
+            //수직인 노드가 생성되었다.
+            let planeNode = SCNNode(geometry: plane)
+            
+            //시게반대방향으로 90도 회전해서 바닥에 놓자.
+            planeNode.eulerAngles.x = -.pi/2
+            
+            node.addChildNode(planeNode)
+            
+        }
+        
+        
         return node
-    }
-*/
-    
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
     }
 }

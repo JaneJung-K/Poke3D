@@ -21,6 +21,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
+        
+        //3D 모델 밝게 만든다
+        sceneView.autoenablesDefaultLighting = true
        
     }
     
@@ -74,6 +77,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             planeNode.eulerAngles.x = -.pi/2
             
             node.addChildNode(planeNode)
+            
+            if let pokeScene = SCNScene(named: "ar.scnassets/eevee.scn") {
+                
+                if let pokeNode = pokeScene.rootNode.childNodes.first {
+                    
+                    //시계 반대 방향으로 90도 회전
+                    pokeNode.eulerAngles.x = .pi/2
+                    
+                    planeNode.addChildNode(pokeNode)
+                    
+                }
+                
+            }
             
         }
         

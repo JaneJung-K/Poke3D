@@ -22,7 +22,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        //3D 모델 밝게 만든다
         sceneView.autoenablesDefaultLighting = true
        
     }
@@ -30,14 +29,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Create a session configuration
-        let configuration = ARImageTrackingConfiguration()
+        // plane과 image 둘 다 tracking 가능
+        let configuration = ARWorldTrackingConfiguration()
         
         if let imageToTrack = ARReferenceImage.referenceImages(inGroupNamed: "Pokemon Cards", bundle: Bundle.main)
         {
-            configuration.trackingImages = imageToTrack
+            configuration.detectionImages = imageToTrack
             
-            configuration.maximumNumberOfTrackedImages = 1
+            configuration.maximumNumberOfTrackedImages = 2
             
             print("Images Successfully Added")
             
@@ -57,39 +56,55 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     // MARK: - ARSCNViewDelegate
     
-    //실제 이미지가 감지되었을 때 3D 이미지를 스크린에 렌더한다.
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
         
         let node = SCNNode()
         
         if let imageAnchor = anchor as? ARImageAnchor {
             
-            //감지한 이미지를 보고 참조이미지 확인하고 실제 사이즈를 가져와라
             let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
             
-            //투명하게 만들어서 카드를 확인할 수 있게 한다
             plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
             
-            //수직인 노드가 생성되었다.
             let planeNode = SCNNode(geometry: plane)
             
-            //시게반대방향으로 90도 회전해서 바닥에 놓자.
             planeNode.eulerAngles.x = -.pi/2
             
             node.addChildNode(planeNode)
             
-            if let pokeScene = SCNScene(named: "ar.scnassets/eevee.scn") {
+            if imageAnchor.referenceImage.name == "eevee-card" {
                 
-                if let pokeNode = pokeScene.rootNode.childNodes.first {
+                if let pokeScene = SCNScene(named: "ar.scnassets/eevee.scn") {
                     
-                    //시계 반대 방향으로 90도 회전
-                    pokeNode.eulerAngles.x = .pi/2
-                    
-                    planeNode.addChildNode(pokeNode)
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        
+                        pokeNode.eulerAngles.x = .pi/2
+                        
+                        planeNode.addChildNode(pokeNode)
+                        
+                    }
                     
                 }
                 
             }
+            
+            if imageAnchor.referenceImage.name == "oddish-card" {
+                
+                if let pokeScene = SCNScene(named: "ar.scnassets/oddish.scn") {
+                    
+                    if let pokeNode = pokeScene.rootNode.childNodes.first {
+                        
+                        pokeNode.eulerAngles.x = .pi/2
+                        
+                        planeNode.addChildNode(pokeNode)
+                        
+                    }
+                    
+                }
+                
+            }
+            
+       
             
         }
         
